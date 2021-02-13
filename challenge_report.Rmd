@@ -1,0 +1,152 @@
+---
+title: "Sales Report"
+author: "Taushin Tanvir Shagar"
+date: "13/02/2021"
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: '2'
+  html_document:
+    code_folding: none
+    df_print: paged
+    highlight: tango
+    number_sections: yes
+    theme: flatly
+    toc: yes
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+    echo = TRUE,
+    eval = TRUE,
+    message = FALSE,
+    warning = FALSE,
+    dpi = 300,
+    fig.align = "center"
+    )
+```
+
+
+```{r, include=FALSE}
+library(plotly)
+library(tidyverse)
+library(lubridate)
+
+source("plot_sales.R")
+```
+
+
+# Total Sales Charts {.tabset .tabset-fade .tabset-pills}
+## Quarterly Sales Trends
+```{r, echo=FALSE}
+bikes_tbl      <- readRDS("C:/Users/sagor/Documents/GitHub/data_products-ttsagor/bikes_tbl.rds")
+bikeshops_tbl  <- readRDS("C:/Users/sagor/Documents/GitHub/data_products-ttsagor/bikeshops_tbl.rds")
+orderlines_tbl <- readRDS("C:/Users/sagor/Documents/GitHub/data_products-ttsagor/orderlines_tbl.rds")
+
+bike_orderlines_tbl <- orderlines_tbl %>%
+  left_join(bikes_tbl,     by = c("product_id" = "bike_id")) %>%
+  left_join(bikeshops_tbl, by = c("customer_id" = "bikeshop_id")) %>%
+  mutate(total_price = price_euro * quantity)
+
+
+
+#######
+total_sales_m_tbl <- bike_orderlines_tbl %>%
+  dplyr::select(order_date, total_price) %>%
+  mutate(date_rounded = floor_date(order_date, unit = "month")) %>%
+  group_by(date_rounded) %>%
+  summarise(total_sales = sum(total_price)) %>%
+  ungroup() %>%
+  mutate(label_text = str_glue("Sales: {format_to_euro(total_sales)}
+                                 Date: {date_rounded %>% format('%B %Y')}"))
+
+g1 <- plot_gen(total_sales_m_tbl)
+g1
+
+```
+
+## Monthly Sales Trends
+```{r, echo=FALSE}
+################
+total_sales_m_tbl <- bike_orderlines_tbl %>%
+  select(order_date, total_price) %>%
+  mutate(date_rounded = floor_date(order_date, unit = "month")) %>%
+  group_by(date_rounded) %>%
+  summarise(total_sales = sum(total_price)) %>%
+  ungroup() %>%
+  mutate(label_text = str_glue("Sales: {format_to_euro(total_sales)}
+                                 Date: {date_rounded %>% format('%B %Y')}"))
+
+g1 <- plot_gen(total_sales_m_tbl)
+g1
+
+```
+
+## Weekly Sales Trends
+```{r, echo=FALSE}
+################
+total_sales_m_tbl <- bike_orderlines_tbl %>%
+  select(order_date, total_price) %>%
+  mutate(date_rounded = floor_date(order_date, unit = "week")) %>%
+  group_by(date_rounded) %>%
+  summarise(total_sales = sum(total_price)) %>%
+  ungroup() %>%
+  mutate(label_text = str_glue("Sales: {format_to_euro(total_sales)}
+                                 Date: {date_rounded %>% format('%B %Y')}"))
+
+g1 <- plot_gen(total_sales_m_tbl)
+g1
+
+```
+
+# Category Sales Charts {.tabset .tabset-fade .tabset-pills}
+## Road
+### Quarterly
+```{r, echo=FALSE}
+plot_categories(category_1 = "Road", 
+                category_2 = "(Race|Triathlon Bike|Endurance|Cyclocross)", 
+                unit = "quarter")
+```
+
+
+### Monthly
+```{r, echo=FALSE}
+plot_categories(category_1 = "Road", 
+                category_2 = "(Race|Triathlon Bike|Endurance|Cyclocross)", 
+                unit = "month")
+```
+
+
+
+### Weekly
+```{r, echo=FALSE}
+plot_categories(category_1 = "Road", 
+                category_2 = "(Race|Triathlon Bike|Endurance|Cyclocross)", 
+                unit = "week")
+```
+
+
+## Mountain
+### Quarterly
+```{r, echo=FALSE}
+plot_categories(category_1 = "Mountain", 
+                category_2 = "(Trail|Cross−Country|Enduro|Downhill|Fat Bikes|Dirt Jump)",
+                unit = "quarter")
+```
+
+
+### Monthly
+```{r, echo=FALSE}
+plot_categories(category_1 = "Mountain", 
+                category_2 = "(Trail|Cross−Country|Enduro|Downhill|Fat Bikes|Dirt Jump)", 
+                unit = "month")
+```
+
+
+### Weekly
+```{r, echo=FALSE}
+plot_categories(category_1 = "Mountain", 
+                category_2 = "(Trail|Cross−Country|Enduro|Downhill|Fat Bikes|Dirt Jump)", 
+                unit = "week")
+```
