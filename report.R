@@ -197,5 +197,21 @@ ggplotly(g2, tooltip = "text")
 
 
 
+bb <-  bike_orderlines_tbl %>%
+  dplyr::select(category_1) %>%
+  group_by(category_1)
 
+distinct(bike_orderlines_tbl, category_2)
+
+count(bike_orderlines_tbl)$n
+sum(bike_orderlines_tbl$price_euro * bike_orderlines_tbl$quantity)
+
+count(bike_orderlines_tbl %>% filter(category_1 == "Mountain"))$n / count(bike_orderlines_tbl %>% filter(category_1 == "Road"))$n
+  
+  
+  
+  
+  
+  
+  
 

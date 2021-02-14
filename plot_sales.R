@@ -1,4 +1,3 @@
-
 plot_categories <- function(category_1 = "All", category_2 = "All",
                             unit = "month", date_format = "%Y-%m-%d",
                             ncol = 1, scales = "free_y",
@@ -95,3 +94,28 @@ plot_gen <- function(total_sales_m_tbl) {
       x = ""
     )
 }
+
+plot_gen_flex <- function(data, unitTile="month") {
+    data <- data  %>%
+    dplyr::select(order_date, total_price) %>%
+    mutate(date_rounded = floor_date(order_date, unit = unitTile)) %>%
+    group_by(date_rounded) %>%
+    summarise(total_sales = sum(total_price)) %>%
+    ungroup() %>%
+    mutate(label_text = str_glue("Sales: {format_to_euro(total_sales)}
+                                 Date: {date_rounded %>% format('%B %Y')}"))
+  
+    data %>%
+      ggplot(aes(x = date_rounded, y = total_sales)) +
+      geom_point() +
+      geom_smooth(method = "loess", span = 0.2) +
+      scale_y_continuous(labels = euro_format()) +
+      expand_limits(y = 0) +
+      labs(
+        title = "Total Sales",
+        y = "Revenue (Euro)",
+        x = ""
+      )
+}
+
+
