@@ -1,0 +1,12 @@
+name: stock_analyzer
+title: stock_analyzer
+username:
+account: taushintanvirshagar
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3636798
+bundleId: 4223275
+url: https://taushintanvirshagar.shinyapps.io/stock_analyzer/
+when: 1613351772.8972
+asMultiple: FALSE
+asStatic: FALSE
